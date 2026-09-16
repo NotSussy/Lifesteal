@@ -1,6 +1,6 @@
 # Lifesteal
 
-A Fabric mod for Minecraft 26.3 implementing a classic "Lifesteal SMP" mechanic.
+A Fabric mod for Minecraft 26.2 implementing a classic "Lifesteal SMP" mechanic.
 
 ## Rules
 
@@ -39,11 +39,15 @@ The mod jar will be in `build/libs/`.
 
 ## Notes on versioning
 
-Minecraft 26.3 ships without Yarn mappings — Fabric mods for 26.1+ build against
+Minecraft 26.2 ships without Yarn mappings — Fabric mods for 26.1+ build against
 Mojang's official mappings (`loom.officialMojangMappings()`), which is what this
 project uses. This project was written and structured by hand in an offline
 sandbox with no access to the Minecraft/Fabric Maven repositories, so it has
-**not** been compiled against the real 26.3 libraries. The code follows the most
+**not** been compiled against the real 26.2 libraries. The code follows the most
 recent known-stable Mojang mapping names and Fabric API surface, but if a class,
-method, or field was renamed in 26.3 you may need to fix a handful of references
+method, or field was renamed in 26.2 you may need to fix a handful of references
 when you first build it locally (the compiler errors will point exactly at them).
+
+The Fabric Loom plugin version used here (`1.16-SNAPSHOT`) matches what other
+public mods currently building for 26.2 use, since 1.16 has not been tagged as
+a stable release yet as of this writing.
