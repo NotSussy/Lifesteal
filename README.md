@@ -39,15 +39,13 @@ The mod jar will be in `build/libs/`.
 
 ## Notes on versioning
 
-Minecraft 26.2 ships without Yarn mappings — Fabric mods for 26.1+ build against
-Mojang's official mappings (`loom.officialMojangMappings()`), which is what this
-project uses. This project was written and structured by hand in an offline
-sandbox with no access to the Minecraft/Fabric Maven repositories, so it has
-**not** been compiled against the real 26.2 libraries. The code follows the most
-recent known-stable Mojang mapping names and Fabric API surface, but if a class,
-method, or field was renamed in 26.2 you may need to fix a handful of references
-when you first build it locally (the compiler errors will point exactly at them).
-
-The Fabric Loom plugin version used here (`1.16-SNAPSHOT`) matches what other
-public mods currently building for 26.2 use, since 1.16 has not been tagged as
-a stable release yet as of this writing.
+Minecraft ships unobfuscated starting with 26.1, so there are no mappings (Yarn
+or Mojang) to declare at all anymore. This project uses Fabric's new
+non-remapping Loom plugin (`net.fabricmc.fabric-loom`) and plain `implementation`
+dependencies instead of `modImplementation`, matching FabricMC's own official
+example mod template for 26.2. This project was written and structured by hand
+in an offline sandbox with no access to the Minecraft/Fabric Maven repositories,
+so it has **not** been compiled against the real 26.2 libraries. The code
+follows current Fabric API conventions, but if a class, method, or field was
+renamed in 26.2 you may need to fix a handful of references when you first
+build it locally (the compiler errors will point exactly at them).
