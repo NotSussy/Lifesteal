@@ -24,7 +24,7 @@ public class HeartItem extends Item {
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
 
@@ -33,7 +33,7 @@ public class HeartItem extends Item {
 		}
 
 		if (HeartManager.isAtCeiling(serverPlayer)) {
-			serverPlayer.displayClientMessage(
+			serverPlayer.sendSystemMessage(
 				Component.literal("You already have the maximum number of hearts!"), true);
 			return InteractionResult.FAIL;
 		}
@@ -42,7 +42,7 @@ public class HeartItem extends Item {
 			stack.shrink(1);
 			level.playSound(null, serverPlayer.blockPosition(), SoundEvents.PLAYER_LEVELUP,
 				SoundSource.PLAYERS, 1.0F, 1.0F);
-			serverPlayer.displayClientMessage(Component.literal("You gained a heart!"), true);
+			serverPlayer.sendSystemMessage(Component.literal("You gained a heart!"), true);
 			return InteractionResult.CONSUME;
 		}
 
