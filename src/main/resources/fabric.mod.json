@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "lifesteal",
+	"version": "${version}",
+	"name": "Lifesteal",
+	"description": "Kill players to steal a heart. Craft hearts back up to a cap, and never fall below 5 hearts.",
+	"authors": [
+		"NotSussy"
+	],
+	"contact": {
+		"repo": "https://github.com/NotSussy/Lifesteal"
+	},
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.notsussy.lifesteal.Lifesteal"
+		]
+	},
+	"mixins": [
+		"lifesteal.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

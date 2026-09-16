@@ -1,0 +1,30 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"DND",
+		"GTG",
+		"DED"
+	],
+	"key": {
+		"D": {
+			"item": "minecraft:diamond"
+		},
+		"N": {
+			"item": "minecraft:netherite_scrap"
+		},
+		"G": {
+			"item": "minecraft:golden_apple"
+		},
+		"T": {
+			"item": "minecraft:totem_of_undying"
+		},
+		"E": {
+			"item": "minecraft:emerald_block"
+		}
+	},
+	"result": {
+		"id": "lifesteal:heart",
+		"count": 1
+	}
+}
