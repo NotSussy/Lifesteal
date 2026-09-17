@@ -7,21 +7,11 @@
 		"DED"
 	],
 	"key": {
-		"D": {
-			"item": "minecraft:diamond"
-		},
-		"N": {
-			"item": "minecraft:netherite_scrap"
-		},
-		"G": {
-			"item": "minecraft:golden_apple"
-		},
-		"T": {
-			"item": "minecraft:totem_of_undying"
-		},
-		"E": {
-			"item": "minecraft:emerald_block"
-		}
+		"D": "minecraft:diamond",
+		"N": "minecraft:netherite_scrap",
+		"G": "minecraft:golden_apple",
+		"T": "minecraft:totem_of_undying",
+		"E": "minecraft:emerald_block"
 	},
 	"result": {
 		"id": "lifesteal:heart",

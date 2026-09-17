@@ -32,8 +32,9 @@ Note: a vanilla crafting grid can only hold one item per slot, so "3 diamonds" /
 this slot" (4 diamond slots, 2 golden apple slots) rather than a stack count in a
 single slot, since Minecraft has no way to require a stack of >1 in one grid cell.
 
-The Heart item's icon is the real vanilla heart sprite (extracted from Mojang's
-own game assets), scaled up from its native 9x9 to 36x36 for a crisper item icon.
+The Heart item's icon is composited from the real vanilla HUD heart sprites
+(the dark outline layer plus the red fill layer, extracted from Mojang's own
+game assets), scaled up from their native 9x9 to 36x36 for a crisper item icon.
 
 ## Building
 
