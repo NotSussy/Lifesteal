@@ -5,16 +5,19 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 /**
- * Tracks the lifesteal max-health rules: a floor of 5 hearts, a ceiling of 8 hearts,
- * and the 1-heart-per-heart-point increments used to move between them.
+ * Tracks the lifesteal max-health rules: a floor of 5 hearts, an overall ceiling of
+ * 20 hearts, a separate lower limit of 8 hearts on crafting new Heart items, and the
+ * 1-heart-per-heart-point increments used to move between them.
  */
 public final class HeartManager {
 
 	public static final float HEALTH_PER_HEART = 2.0F;
 	public static final float MIN_HEARTS = 5.0F;
-	public static final float MAX_HEARTS = 8.0F;
+	public static final float MAX_HEARTS = 20.0F;
+	public static final float CRAFT_LIMIT_HEARTS = 8.0F;
 	public static final float MIN_HEALTH = MIN_HEARTS * HEALTH_PER_HEART;
 	public static final float MAX_HEALTH = MAX_HEARTS * HEALTH_PER_HEART;
+	private static final float VANILLA_DEFAULT_HEALTH = 20.0F;
 
 	private HeartManager() {
 	}
@@ -37,6 +40,15 @@ public final class HeartManager {
 	}
 
 	/**
+	 * Whether a player is allowed to craft a new Heart item. This is a separate, lower
+	 * limit than the overall 20-heart ceiling: crafting stops at 8 hearts, but hearts
+	 * picked up from other players' deaths can still carry someone all the way to 20.
+	 */
+	public static boolean canCraft(ServerPlayer player) {
+		return getHearts(player) < CRAFT_LIMIT_HEARTS;
+	}
+
+	/**
 	 * Sets a player's max health to the lifesteal floor if it has never been touched by this
 	 * mod before (i.e. it is still at vanilla's default of 20.0). Called on every join so that
 	 * brand-new players start at the 5-heart floor instead of vanilla's 10 hearts.
@@ -47,7 +59,7 @@ public final class HeartManager {
 			return;
 		}
 
-		if (attribute.getBaseValue() > MAX_HEALTH) {
+		if (attribute.getBaseValue() >= VANILLA_DEFAULT_HEALTH) {
 			attribute.setBaseValue(MIN_HEALTH);
 			if (player.getHealth() > MIN_HEALTH) {
 				player.setHealth(MIN_HEALTH);
@@ -56,7 +68,7 @@ public final class HeartManager {
 	}
 
 	/**
-	 * Grants one heart, clamped at the 8-heart ceiling. Returns true if a heart was actually
+	 * Grants one heart, clamped at the 20-heart ceiling. Returns true if a heart was actually
 	 * gained.
 	 */
 	public static boolean addHeart(ServerPlayer player) {

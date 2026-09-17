@@ -5,17 +5,19 @@ A Fabric mod for Minecraft 26.2 implementing a classic "Lifesteal SMP" mechanic.
 ## Rules
 
 - Every player has a max health floor of **5 hearts** — it can never drop below that.
-- Every player has a max health ceiling of **8 hearts** — no way to exceed that.
+- Every player has an overall max health ceiling of **20 hearts** — no way to exceed that.
 - New players start at the 5-heart floor.
 - Dying costs you a heart: your max health permanently drops by one heart, and a
   **Heart** item drops on the ground at your death location, just like the rest of
   your inventory. If you were already at the 5-heart floor, nothing is lost and
   nothing drops.
 - Picking up and using (right-click) a Heart item grants +1 max heart, capped at
-  8 hearts — this is how a killer actually "steals" a heart: by grabbing the one
-  their victim dropped.
-- A **Heart** item can also be crafted from scratch. The recipe refuses to produce
-  one while the crafter already has 8 or more hearts.
+  the 20-heart ceiling — this is how a killer actually "steals" a heart: by
+  grabbing the one their victim dropped.
+- A **Heart** item can also be crafted from scratch, but only while under **8**
+  hearts — the recipe refuses to produce one at 8 hearts or above. This is a
+  separate, lower limit than the 20-heart ceiling: it only stops crafting new
+  hearts, not gaining more from kills or drops.
 
 ### Crafting a Heart
 

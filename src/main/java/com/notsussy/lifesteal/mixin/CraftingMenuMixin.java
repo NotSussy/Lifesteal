@@ -16,18 +16,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Blocks handing out a crafted heart while the crafting player is already at the 8-heart
- * ceiling, so the recipe simply shows no result instead of letting the item be taken.
+ * Blocks handing out a crafted heart once the crafting player already has 8 or more
+ * hearts, so the recipe simply shows no result instead of letting the item be taken.
+ * This is a lower, separate limit from the overall 20-heart ceiling: it only stops
+ * crafting new hearts, not gaining them some other way (like picking one up).
  */
 @Mixin(CraftingMenu.class)
 public abstract class CraftingMenuMixin {
 
 	@Inject(method = "slotChangedCraftingGrid", at = @At("TAIL"))
-	private static void lifesteal$blockHeartAtCeiling(AbstractContainerMenu menu, Level level, Player player,
+	private static void lifesteal$blockHeartPastCraftLimit(AbstractContainerMenu menu, Level level, Player player,
 			CraftingContainer craftSlots, ResultContainer resultSlots, CallbackInfo ci) {
 		ItemStack result = resultSlots.getItem(0);
 		if (result.is(Lifesteal.HEART) && player instanceof ServerPlayer serverPlayer
-				&& HeartManager.isAtCeiling(serverPlayer)) {
+				&& !HeartManager.canCraft(serverPlayer)) {
 			resultSlots.setItem(0, ItemStack.EMPTY);
 		}
 	}

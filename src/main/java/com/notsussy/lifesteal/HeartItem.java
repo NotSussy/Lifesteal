@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Consumed on use to grant the player an extra heart, up to the 8-heart cap.
+ * Consumed on use to grant the player an extra heart, up to the 20-heart cap.
  */
 public class HeartItem extends Item {
 
