@@ -6,7 +6,7 @@ A Fabric mod for Minecraft 26.2 implementing a classic "Lifesteal SMP" mechanic.
 
 - Every player has a max health floor of **5 hearts** — it can never drop below that.
 - Every player has an overall max health ceiling of **20 hearts** — no way to exceed that.
-- New players start at the 5-heart floor.
+- New players start at vanilla's normal 10 hearts, comfortably between the floor and ceiling.
 - Dying costs you a heart: your max health permanently drops by one heart, and a
   **Heart** item drops on the ground at your death location, just like the rest of
   your inventory. If you were already at the 5-heart floor, nothing is lost and

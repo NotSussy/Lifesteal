@@ -17,7 +17,6 @@ public final class HeartManager {
 	public static final float CRAFT_LIMIT_HEARTS = 8.0F;
 	public static final float MIN_HEALTH = MIN_HEARTS * HEALTH_PER_HEART;
 	public static final float MAX_HEALTH = MAX_HEARTS * HEALTH_PER_HEART;
-	private static final float VANILLA_DEFAULT_HEALTH = 20.0F;
 
 	private HeartManager() {
 	}
@@ -46,25 +45,6 @@ public final class HeartManager {
 	 */
 	public static boolean canCraft(ServerPlayer player) {
 		return getHearts(player) < CRAFT_LIMIT_HEARTS;
-	}
-
-	/**
-	 * Sets a player's max health to the lifesteal floor if it has never been touched by this
-	 * mod before (i.e. it is still at vanilla's default of 20.0). Called on every join so that
-	 * brand-new players start at the 5-heart floor instead of vanilla's 10 hearts.
-	 */
-	public static void initializeIfNeeded(ServerPlayer player) {
-		AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
-		if (attribute == null) {
-			return;
-		}
-
-		if (attribute.getBaseValue() >= VANILLA_DEFAULT_HEALTH) {
-			attribute.setBaseValue(MIN_HEALTH);
-			if (player.getHealth() > MIN_HEALTH) {
-				player.setHealth(MIN_HEALTH);
-			}
-		}
 	}
 
 	/**

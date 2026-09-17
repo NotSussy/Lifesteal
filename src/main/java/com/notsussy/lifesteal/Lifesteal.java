@@ -4,7 +4,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -36,9 +35,6 @@ public class Lifesteal implements ModInitializer {
 	public void onInitialize() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FOOD_AND_DRINKS)
 			.register(output -> output.accept(HEART));
-
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-			HeartManager.initializeIfNeeded(handler.player));
 
 		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) ->
 			HeartManager.copyOnRespawn(oldPlayer, newPlayer));
