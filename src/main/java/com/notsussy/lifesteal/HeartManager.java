@@ -73,4 +73,38 @@ public final class HeartManager {
 		attribute.setBaseValue(newValue);
 		return true;
 	}
+
+	/**
+	 * Takes away one heart, clamped at the 5-heart floor. Returns true if a heart was actually
+	 * lost.
+	 */
+	public static boolean removeHeart(ServerPlayer player) {
+		AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
+		if (attribute == null || isAtFloor(player)) {
+			return false;
+		}
+
+		double newValue = Math.max(attribute.getBaseValue() - HEALTH_PER_HEART, MIN_HEALTH);
+		if (newValue >= attribute.getBaseValue()) {
+			return false;
+		}
+
+		attribute.setBaseValue(newValue);
+		return true;
+	}
+
+	/**
+	 * Carries the max-health attribute across a respawn. Vanilla creates a brand-new player
+	 * instance on respawn and does not copy custom attribute changes on its own, so without
+	 * this every death would silently reset a player back to the vanilla default.
+	 */
+	public static void copyOnRespawn(ServerPlayer oldPlayer, ServerPlayer newPlayer) {
+		AttributeInstance oldAttribute = oldPlayer.getAttribute(Attributes.MAX_HEALTH);
+		AttributeInstance newAttribute = newPlayer.getAttribute(Attributes.MAX_HEALTH);
+		if (oldAttribute == null || newAttribute == null) {
+			return;
+		}
+
+		newAttribute.setBaseValue(oldAttribute.getBaseValue());
+	}
 }

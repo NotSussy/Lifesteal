@@ -3,6 +3,7 @@ package com.notsussy.lifesteal;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,10 +13,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,9 @@ public class Lifesteal implements ModInitializer {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
 			HeartManager.initializeIfNeeded(handler.player));
 
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) ->
+			HeartManager.copyOnRespawn(oldPlayer, newPlayer));
+
 		ServerLivingEntityEvents.AFTER_DEATH.register(Lifesteal::onEntityDeath);
 
 		LOGGER.info("Lifesteal loaded: floor {} hearts, ceiling {} hearts",
@@ -49,19 +53,12 @@ public class Lifesteal implements ModInitializer {
 			return;
 		}
 
-		Entity attacker = damageSource.getEntity();
-		if (!(attacker instanceof ServerPlayer killer) || killer == victim) {
+		if (!HeartManager.removeHeart(victim)) {
+			// Already at the 5-heart floor: nothing to lose, nothing drops.
 			return;
 		}
 
-		if (HeartManager.isAtFloor(victim)) {
-			// The victim was already at the 5-heart floor: nothing to steal.
-			return;
-		}
-
-		if (HeartManager.addHeart(killer)) {
-			killer.sendSystemMessage(
-				Component.literal("You stole a heart from " + victim.getName().getString() + "!"), true);
-		}
+		victim.spawnAtLocation(new ItemStack(HEART));
+		victim.sendSystemMessage(Component.literal("You lost a heart!"), true);
 	}
 }
