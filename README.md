@@ -22,15 +22,16 @@ A Fabric mod for Minecraft 26.2 implementing a classic "Lifesteal SMP" mechanic.
 ### Crafting a Heart
 
 ```
-Diamond          | Netherite Scrap | Diamond
-Golden Apple     | Totem of Undying| Golden Apple
-Diamond          | Emerald Block   | Diamond
+3 Diamonds        | Netherite Scrap  | 3 Diamonds
+4 Golden Apples   | Totem of Undying | 4 Golden Apples
+3 Diamonds        | Emerald Block    | 3 Diamonds
 ```
 
-Note: a vanilla crafting grid can only hold one item per slot, so "3 diamonds" /
-"4 golden apples" from the original spec were interpreted as "this ingredient in
-this slot" (4 diamond slots, 2 golden apple slots) rather than a stack count in a
-single slot, since Minecraft has no way to require a stack of >1 in one grid cell.
+A vanilla crafting grid can only ever match and consume 1 item per slot on its own,
+so the "3 diamonds" / "4 golden apples" quantities are enforced separately from the
+recipe itself: the diamond and golden apple slots must already hold a full stack of
+3 or 4 respectively for the Heart to appear in the output at all, and picking it up
+consumes that whole stack from each of those slots (not just 1).
 
 The Heart item's icon is composited from the real vanilla HUD heart sprites
 (the dark outline layer plus the red fill layer, extracted from Mojang's own
