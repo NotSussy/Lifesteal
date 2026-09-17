@@ -9,9 +9,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -58,7 +58,7 @@ public class Lifesteal implements ModInitializer {
 			return;
 		}
 
-		victim.spawnAtLocation(new ItemStack(HEART));
+		victim.spawnAtLocation(victim.serverLevel(), new ItemStack(HEART));
 		victim.sendSystemMessage(Component.literal("You lost a heart!"), true);
 	}
 }
