@@ -77,7 +77,7 @@ public final class HeartManager {
 			}
 		}
 
-		AABB area = new AABB(min, max);
+		AABB area = new AABB(min.getX(), min.getY(), min.getZ(), max.getX() + 1, max.getY() + 1, max.getZ() + 1);
 		for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area)) {
 			if (itemEntity.getItem().is(Lifesteal.HEART)) {
 				return true;
