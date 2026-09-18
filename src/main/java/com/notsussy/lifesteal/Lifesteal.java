@@ -1,6 +1,7 @@
 package com.notsussy.lifesteal;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -25,11 +26,13 @@ public class Lifesteal implements ModInitializer {
 	public static final String MOD_ID = "lifesteal";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static final int HEART_MAX_STACK_SIZE = 16;
+
 	public static final ResourceKey<Item> HEART_KEY =
 		ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "heart"));
 
 	public static final Item HEART = Registry.register(BuiltInRegistries.ITEM, HEART_KEY,
-		new HeartItem(new Item.Properties().setId(HEART_KEY).stacksTo(16)));
+		new HeartItem(new Item.Properties().setId(HEART_KEY).stacksTo(HEART_MAX_STACK_SIZE)));
 
 	@Override
 	public void onInitialize() {
@@ -40,6 +43,9 @@ public class Lifesteal implements ModInitializer {
 			HeartManager.copyOnRespawn(oldPlayer, newPlayer));
 
 		ServerLivingEntityEvents.AFTER_DEATH.register(Lifesteal::onEntityDeath);
+
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+			WithdrawCommand.register(dispatcher));
 
 		LOGGER.info("Lifesteal loaded: floor {} hearts, ceiling {} hearts",
 			(int) HeartManager.MIN_HEARTS, (int) HeartManager.MAX_HEARTS);

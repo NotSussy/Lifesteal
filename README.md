@@ -14,24 +14,30 @@ A Fabric mod for Minecraft 26.2 implementing a classic "Lifesteal SMP" mechanic.
 - Picking up and using (right-click) a Heart item grants +1 max heart, capped at
   the 20-heart ceiling — this is how a killer actually "steals" a heart: by
   grabbing the one their victim dropped.
-- A **Heart** item can also be crafted from scratch, but only while under **8**
-  hearts — the recipe refuses to produce one at 8 hearts or above. This is a
+- A **Heart** item can also be crafted from scratch, but only while under **9**
+  hearts — the recipe refuses to produce one at 9 hearts or above. This is a
   separate, lower limit than the 20-heart ceiling: it only stops crafting new
   hearts, not gaining more from kills or drops.
+- Crafting also refuses to produce a Heart if you already have one within 8
+  blocks — in your own inventory, your ender chest, a nearby chest (or any
+  other container block), or just sitting on the ground. Hearts have to
+  actually be used, not stockpiled.
+- `/withdraw <amount>` converts your own hearts back into carryable Heart
+  items, without ever taking you below the 5-heart floor.
 
 ### Crafting a Heart
 
 ```
-3 Diamonds        | Netherite Scrap  | 3 Diamonds
-4 Golden Apples   | Totem of Undying | 4 Golden Apples
-3 Diamonds        | Emerald Block    | 3 Diamonds
+3 Diamonds  | Netherite Scrap  | 3 Diamonds
+Trial Key   | Totem of Undying | Trial Key
+3 Diamonds  | Emerald Block    | 3 Diamonds
 ```
 
 A vanilla crafting grid can only ever match and consume 1 item per slot on its own,
-so the "3 diamonds" / "4 golden apples" quantities are enforced separately from the
-recipe itself: the diamond and golden apple slots must already hold a full stack of
-3 or 4 respectively for the Heart to appear in the output at all, and picking it up
-consumes that whole stack from each of those slots (not just 1).
+so the "3 diamonds per slot" quantity is enforced separately from the recipe itself:
+each diamond slot must already hold a full stack of 3 for the Heart to appear in the
+output at all, and picking it up consumes that whole stack from each of those slots
+(not just 1).
 
 The Heart item's icon is composited from the real vanilla HUD heart sprites
 (the dark outline layer plus the red fill layer, extracted from Mojang's own

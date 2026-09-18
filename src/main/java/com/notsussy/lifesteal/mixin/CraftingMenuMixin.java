@@ -17,15 +17,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Two extra conditions on top of the data-driven Heart recipe, which by itself only
+ * Extra conditions on top of the data-driven Heart recipe, which by itself only
  * requires (and would only consume) 1 item per grid slot:
  * <ul>
- *   <li>Blocks the result once the crafting player already has 8 or more hearts,
+ *   <li>Blocks the result once the crafting player already has 9 or more hearts,
  *   so the recipe simply shows no result instead of letting the item be taken. This
  *   is a lower, separate limit than the overall 20-heart ceiling.</li>
- *   <li>Blocks the result unless each diamond/golden apple slot already holds a full
- *   stack of the amount that ingredient is actually supposed to cost (see
- *   {@link HeartRecipeCost}); {@link ResultSlotMixin} removes the rest on take.</li>
+ *   <li>Blocks the result unless each diamond slot already holds a full stack of 3
+ *   (see {@link HeartRecipeCost}); {@link ResultSlotMixin} removes the rest on take.</li>
+ *   <li>Blocks the result if the player already has a Heart item within 8 blocks
+ *   (inventory, ender chest, a nearby container, or on the ground), so Hearts have
+ *   to actually be used instead of stockpiled.</li>
  * </ul>
  */
 @Mixin(CraftingMenu.class)
@@ -35,11 +37,11 @@ public abstract class CraftingMenuMixin {
 	private static void lifesteal$gateHeartResult(AbstractContainerMenu menu, ServerLevel level, Player player,
 			CraftingContainer craftSlots, ResultContainer resultSlots, RecipeHolder<?> recipeHolder, CallbackInfo ci) {
 		ItemStack result = resultSlots.getItem(0);
-		if (!result.is(Lifesteal.HEART)) {
+		if (!result.is(Lifesteal.HEART) || !(player instanceof ServerPlayer serverPlayer)) {
 			return;
 		}
 
-		boolean blocked = player instanceof ServerPlayer serverPlayer && !HeartManager.canCraft(serverPlayer);
+		boolean blocked = !HeartManager.canCraft(serverPlayer);
 
 		if (!blocked) {
 			for (int slot : HeartRecipeCost.DIAMOND_SLOTS) {
@@ -50,13 +52,8 @@ public abstract class CraftingMenuMixin {
 			}
 		}
 
-		if (!blocked) {
-			for (int slot : HeartRecipeCost.GOLDEN_APPLE_SLOTS) {
-				if (craftSlots.getItem(slot).getCount() < HeartRecipeCost.GOLDEN_APPLES_PER_SLOT) {
-					blocked = true;
-					break;
-				}
-			}
+		if (!blocked && HeartManager.hasHeartNearby(serverPlayer)) {
+			blocked = true;
 		}
 
 		if (blocked) {

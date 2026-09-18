@@ -1,12 +1,18 @@
 package com.notsussy.lifesteal;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Tracks the lifesteal max-health rules: a floor of 5 hearts, an overall ceiling of
- * 20 hearts, a separate lower limit of 8 hearts on crafting new Heart items, and the
+ * 20 hearts, a separate lower limit of 9 hearts on crafting new Heart items, and the
  * 1-heart-per-heart-point increments used to move between them.
  */
 public final class HeartManager {
@@ -14,9 +20,10 @@ public final class HeartManager {
 	public static final float HEALTH_PER_HEART = 2.0F;
 	public static final float MIN_HEARTS = 5.0F;
 	public static final float MAX_HEARTS = 20.0F;
-	public static final float CRAFT_LIMIT_HEARTS = 8.0F;
+	public static final float CRAFT_LIMIT_HEARTS = 9.0F;
 	public static final float MIN_HEALTH = MIN_HEARTS * HEALTH_PER_HEART;
 	public static final float MAX_HEALTH = MAX_HEARTS * HEALTH_PER_HEART;
+	private static final int NEARBY_HEART_RADIUS = 8;
 
 	private HeartManager() {
 	}
@@ -40,11 +47,53 @@ public final class HeartManager {
 
 	/**
 	 * Whether a player is allowed to craft a new Heart item. This is a separate, lower
-	 * limit than the overall 20-heart ceiling: crafting stops at 8 hearts, but hearts
+	 * limit than the overall 20-heart ceiling: crafting stops at 9 hearts, but hearts
 	 * picked up from other players' deaths can still carry someone all the way to 20.
 	 */
 	public static boolean canCraft(ServerPlayer player) {
 		return getHearts(player) < CRAFT_LIMIT_HEARTS;
+	}
+
+	/**
+	 * Whether the player already has a Heart item somewhere close at hand: their own
+	 * inventory, their ender chest, a nearby chest (or any other container block), or
+	 * one sitting on the ground, all within an 8-block radius. Used to stop players
+	 * from stockpiling crafted Hearts instead of using them.
+	 */
+	public static boolean hasHeartNearby(ServerPlayer player) {
+		if (containsHeart(player.getInventory()) || containsHeart(player.getEnderChestInventory())) {
+			return true;
+		}
+
+		ServerLevel level = (ServerLevel) player.level();
+		BlockPos center = player.blockPosition();
+		BlockPos min = center.offset(-NEARBY_HEART_RADIUS, -NEARBY_HEART_RADIUS, -NEARBY_HEART_RADIUS);
+		BlockPos max = center.offset(NEARBY_HEART_RADIUS, NEARBY_HEART_RADIUS, NEARBY_HEART_RADIUS);
+
+		for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
+			BlockEntity blockEntity = level.getBlockEntity(pos);
+			if (blockEntity instanceof Container container && containsHeart(container)) {
+				return true;
+			}
+		}
+
+		AABB area = new AABB(min, max);
+		for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area)) {
+			if (itemEntity.getItem().is(Lifesteal.HEART)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean containsHeart(Container container) {
+		for (int i = 0; i < container.getContainerSize(); i++) {
+			if (container.getItem(i).is(Lifesteal.HEART)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -83,6 +132,31 @@ public final class HeartManager {
 
 		attribute.setBaseValue(newValue);
 		return true;
+	}
+
+	/**
+	 * Whether the player can withdraw this many hearts without dropping below the 5-heart floor.
+	 */
+	public static boolean canWithdraw(ServerPlayer player, int amount) {
+		return getHearts(player) - amount >= MIN_HEARTS;
+	}
+
+	/**
+	 * Removes the given number of hearts from a player's max health, clamped at the 5-heart
+	 * floor. Does not hand out any Heart items; callers are expected to check
+	 * {@link #canWithdraw} first and hand out items themselves.
+	 */
+	public static void removeHearts(ServerPlayer player, int amount) {
+		AttributeInstance attribute = player.getAttribute(Attributes.MAX_HEALTH);
+		if (attribute == null) {
+			return;
+		}
+
+		double newValue = Math.max(attribute.getBaseValue() - amount * HEALTH_PER_HEART, MIN_HEALTH);
+		attribute.setBaseValue(newValue);
+		if (player.getHealth() > newValue) {
+			player.setHealth((float) newValue);
+		}
 	}
 
 	/**

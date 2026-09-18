@@ -3,13 +3,13 @@
 	"category": "misc",
 	"pattern": [
 		"DND",
-		"GTG",
+		"KTK",
 		"DED"
 	],
 	"key": {
 		"D": "minecraft:diamond",
 		"N": "minecraft:netherite_scrap",
-		"G": "minecraft:golden_apple",
+		"K": "minecraft:trial_key",
 		"T": "minecraft:totem_of_undying",
 		"E": "minecraft:emerald_block"
 	},
