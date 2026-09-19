@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -37,7 +38,7 @@ public final class WithdrawCommand {
 						int stackSize = Math.min(remaining, Lifesteal.HEART_MAX_STACK_SIZE);
 						ItemStack stack = new ItemStack(Lifesteal.HEART, stackSize);
 						if (!player.getInventory().add(stack)) {
-							player.drop(stack, false);
+							player.spawnAtLocation((ServerLevel) player.level(), stack);
 						}
 						remaining -= stackSize;
 					}
