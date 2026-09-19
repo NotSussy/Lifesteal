@@ -2,13 +2,14 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
 	"pattern": [
-		"DND",
+		"BND",
 		"KTK",
 		"DED"
 	],
 	"key": {
-		"D": "minecraft:diamond",
+		"B": "minecraft:diamond_block",
 		"N": "minecraft:netherite_scrap",
+		"D": "minecraft:diamond",
 		"K": "minecraft:trial_key",
 		"T": "minecraft:totem_of_undying",
 		"E": "minecraft:emerald_block"
