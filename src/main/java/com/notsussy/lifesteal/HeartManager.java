@@ -7,6 +7,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 
@@ -47,23 +48,25 @@ public final class HeartManager {
 
 	/**
 	 * Whether a player is allowed to craft a new Heart item. This is a separate, lower
-	 * limit than the overall 20-heart ceiling: crafting stops at 9 hearts, but hearts
-	 * picked up from other players' deaths can still carry someone all the way to 20.
+	 * limit than the overall 20-heart ceiling: crafting stops once the player's total
+	 * heart count - see {@link #countHeartsEverywhere} - reaches 9, but hearts picked
+	 * up from other players' deaths can still carry someone all the way to 20.
 	 */
 	public static boolean canCraft(ServerPlayer player) {
-		return getHearts(player) < CRAFT_LIMIT_HEARTS;
+		return countHeartsEverywhere(player) < CRAFT_LIMIT_HEARTS;
 	}
 
 	/**
-	 * Whether the player already has a Heart item somewhere close at hand: their own
-	 * inventory, their ender chest, a nearby chest (or any other container block), or
-	 * one sitting on the ground, all within an 8-block radius. Used to stop players
-	 * from stockpiling crafted Hearts instead of using them.
+	 * Adds up a player's equipped hearts and every loose Heart item close at hand: their
+	 * own inventory, their ender chest, a nearby chest (or any other container block), or
+	 * one sitting on the ground, all within an 8-block radius. Used so crafting a Heart is
+	 * only blocked once that grand total would actually reach the craft limit, rather than
+	 * merely because a Heart item exists somewhere nearby.
 	 */
-	public static boolean hasHeartNearby(ServerPlayer player) {
-		if (containsHeart(player.getInventory()) || containsHeart(player.getEnderChestInventory())) {
-			return true;
-		}
+	public static float countHeartsEverywhere(ServerPlayer player) {
+		float total = getHearts(player);
+		total += countHearts(player.getInventory());
+		total += countHearts(player.getEnderChestInventory());
 
 		ServerLevel level = (ServerLevel) player.level();
 		BlockPos center = player.blockPosition();
@@ -72,28 +75,31 @@ public final class HeartManager {
 
 		for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
 			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if (blockEntity instanceof Container container && containsHeart(container)) {
-				return true;
+			if (blockEntity instanceof Container container) {
+				total += countHearts(container);
 			}
 		}
 
 		AABB area = new AABB(min.getX(), min.getY(), min.getZ(), max.getX() + 1, max.getY() + 1, max.getZ() + 1);
 		for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area)) {
-			if (itemEntity.getItem().is(Lifesteal.HEART)) {
-				return true;
+			ItemStack stack = itemEntity.getItem();
+			if (stack.is(Lifesteal.HEART)) {
+				total += stack.getCount();
 			}
 		}
 
-		return false;
+		return total;
 	}
 
-	private static boolean containsHeart(Container container) {
+	private static int countHearts(Container container) {
+		int count = 0;
 		for (int i = 0; i < container.getContainerSize(); i++) {
-			if (container.getItem(i).is(Lifesteal.HEART)) {
-				return true;
+			ItemStack stack = container.getItem(i);
+			if (stack.is(Lifesteal.HEART)) {
+				count += stack.getCount();
 			}
 		}
-		return false;
+		return count;
 	}
 
 	/**

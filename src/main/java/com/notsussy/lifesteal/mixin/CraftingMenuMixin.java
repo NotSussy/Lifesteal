@@ -17,15 +17,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Extra conditions on top of the data-driven Heart recipe:
- * <ul>
- *   <li>Blocks the result once the crafting player already has 9 or more hearts,
- *   so the recipe simply shows no result instead of letting the item be taken. This
- *   is a lower, separate limit than the overall 20-heart ceiling.</li>
- *   <li>Blocks the result if the player already has a Heart item within 8 blocks
- *   (inventory, ender chest, a nearby container, or on the ground), so Hearts have
- *   to actually be used instead of stockpiled.</li>
- * </ul>
+ * Blocks the crafted result once the player's total heart count - their equipped
+ * hearts plus every loose Heart item within 8 blocks (inventory, ender chest, a
+ * nearby container, or on the ground) - would reach 9 or more. This is a lower,
+ * separate limit than the overall 20-heart ceiling: it only stops crafting new
+ * hearts, not gaining more from kills or drops. See
+ * {@link HeartManager#countHeartsEverywhere}.
  */
 @Mixin(CraftingMenu.class)
 public abstract class CraftingMenuMixin {
@@ -38,9 +35,7 @@ public abstract class CraftingMenuMixin {
 			return;
 		}
 
-		boolean blocked = !HeartManager.canCraft(serverPlayer) || HeartManager.hasHeartNearby(serverPlayer);
-
-		if (blocked) {
+		if (!HeartManager.canCraft(serverPlayer)) {
 			resultSlots.setItem(0, ItemStack.EMPTY);
 		}
 	}

@@ -14,14 +14,14 @@ A Fabric mod for Minecraft 26.3 implementing a classic "Lifesteal SMP" mechanic.
 - Picking up and using (right-click) a Heart item grants +1 max heart, capped at
   the 20-heart ceiling — this is how a killer actually "steals" a heart: by
   grabbing the one their victim dropped.
-- A **Heart** item can also be crafted from scratch, but only while under **9**
-  hearts — the recipe refuses to produce one at 9 hearts or above. This is a
-  separate, lower limit than the 20-heart ceiling: it only stops crafting new
-  hearts, not gaining more from kills or drops.
-- Crafting also refuses to produce a Heart if you already have one within 8
-  blocks — in your own inventory, your ender chest, a nearby chest (or any
-  other container block), or just sitting on the ground. Hearts have to
-  actually be used, not stockpiled.
+- A **Heart** item can also be crafted from scratch, but only while your total
+  heart count stays under **9**. That total adds up your equipped hearts plus
+  every loose Heart item within 8 blocks — your own inventory, your ender
+  chest, a nearby chest (or any other container block), or one just sitting
+  on the ground. As long as that grand total is under 9, crafting works; the
+  moment it would hit 9 or more, it stops. This is a separate, lower limit
+  than the 20-heart ceiling: it only stops crafting new hearts, not gaining
+  more from kills or drops.
 - `/withdraw <amount>` converts your own hearts back into carryable Heart
   items, without ever taking you below the 5-heart floor.
 
