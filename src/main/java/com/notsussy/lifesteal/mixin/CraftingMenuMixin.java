@@ -1,7 +1,6 @@
 package com.notsussy.lifesteal.mixin;
 
 import com.notsussy.lifesteal.HeartManager;
-import com.notsussy.lifesteal.Lifesteal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +30,7 @@ public abstract class CraftingMenuMixin {
 	private static void lifesteal$gateHeartResult(AbstractContainerMenu menu, ServerLevel level, Player player,
 			CraftingContainer craftSlots, ResultContainer resultSlots, RecipeHolder<?> recipeHolder, CallbackInfo ci) {
 		ItemStack result = resultSlots.getItem(0);
-		if (!result.is(Lifesteal.HEART) || !(player instanceof ServerPlayer serverPlayer)) {
+		if (!HeartManager.isHeartStack(result) || !(player instanceof ServerPlayer serverPlayer)) {
 			return;
 		}
 

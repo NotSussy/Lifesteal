@@ -15,7 +15,17 @@
 		"E": "minecraft:emerald_block"
 	},
 	"result": {
-		"id": "lifesteal:heart",
-		"count": 1
+		"id": "minecraft:nether_star",
+		"count": 1,
+		"components": {
+			"minecraft:custom_data": {
+				"lifesteal_heart": true
+			},
+			"minecraft:custom_name": {
+				"text": "Heart",
+				"italic": false,
+				"color": "red"
+			}
+		}
 	}
 }

@@ -35,8 +35,8 @@ public final class WithdrawCommand {
 
 					int remaining = amount;
 					while (remaining > 0) {
-						int stackSize = Math.min(remaining, Lifesteal.HEART_MAX_STACK_SIZE);
-						ItemStack stack = new ItemStack(Lifesteal.HEART, stackSize);
+						int stackSize = Math.min(remaining, HeartManager.HEART_STACK_SIZE);
+						ItemStack stack = HeartManager.createHeartStack(stackSize);
 						if (!player.getInventory().add(stack)) {
 							player.spawnAtLocation((ServerLevel) player.level(), stack);
 						}

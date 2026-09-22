@@ -1,13 +1,19 @@
 package com.notsussy.lifesteal;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 
@@ -15,6 +21,14 @@ import net.minecraft.world.phys.AABB;
  * Tracks the lifesteal max-health rules: a floor of 5 hearts, an overall ceiling of
  * 20 hearts, a separate lower limit of 9 hearts on crafting new Heart items, and the
  * 1-heart-per-heart-point increments used to move between them.
+ *
+ * <p>The Heart item is deliberately not its own registered item: a truly custom item
+ * would need every connecting client to have Fabric Loader and Fabric API installed
+ * just to join the server, since the client has to understand any registry entry the
+ * server might send it. Instead a Heart is a plain vanilla Nether Star carrying a
+ * {@code minecraft:custom_data} marker and a custom name - both are stock vanilla
+ * components any client already understands, so the server works with vanilla clients
+ * too.
  */
 public final class HeartManager {
 
@@ -24,6 +38,11 @@ public final class HeartManager {
 	public static final float CRAFT_LIMIT_HEARTS = 9.0F;
 	public static final float MIN_HEALTH = MIN_HEARTS * HEALTH_PER_HEART;
 	public static final float MAX_HEALTH = MAX_HEARTS * HEALTH_PER_HEART;
+
+	public static final Item HEART_BASE_ITEM = Items.NETHER_STAR;
+	public static final int HEART_STACK_SIZE = 64;
+
+	private static final String HEART_MARKER_KEY = "lifesteal_heart";
 	private static final int NEARBY_HEART_RADIUS = 8;
 
 	private HeartManager() {
@@ -44,6 +63,31 @@ public final class HeartManager {
 
 	public static boolean isAtFloor(ServerPlayer player) {
 		return getHearts(player) <= MIN_HEARTS;
+	}
+
+	/**
+	 * Whether the given stack is a Heart: a Nether Star carrying our marker data.
+	 * A plain, unmarked Nether Star is not a Heart.
+	 */
+	public static boolean isHeartStack(ItemStack stack) {
+		if (!stack.is(HEART_BASE_ITEM)) {
+			return false;
+		}
+
+		CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+		return data != null && data.copyTag().contains(HEART_MARKER_KEY);
+	}
+
+	/**
+	 * Builds a new Heart item stack: a Nether Star marked so {@link #isHeartStack}
+	 * recognizes it, with a custom display name.
+	 */
+	public static ItemStack createHeartStack(int count) {
+		ItemStack stack = new ItemStack(HEART_BASE_ITEM, count);
+		CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putBoolean(HEART_MARKER_KEY, true));
+		stack.set(DataComponents.CUSTOM_NAME,
+			Component.literal("Heart").withStyle(style -> style.withItalic(false).withColor(ChatFormatting.RED)));
+		return stack;
 	}
 
 	/**
@@ -83,7 +127,7 @@ public final class HeartManager {
 		AABB area = new AABB(min.getX(), min.getY(), min.getZ(), max.getX() + 1, max.getY() + 1, max.getZ() + 1);
 		for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area)) {
 			ItemStack stack = itemEntity.getItem();
-			if (stack.is(Lifesteal.HEART)) {
+			if (isHeartStack(stack)) {
 				total += stack.getCount();
 			}
 		}
@@ -95,7 +139,7 @@ public final class HeartManager {
 		int count = 0;
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
-			if (stack.is(Lifesteal.HEART)) {
+			if (isHeartStack(stack)) {
 				count += stack.getCount();
 			}
 		}

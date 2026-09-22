@@ -36,9 +36,17 @@ Diamond       | Emerald Block    | Diamond
 Every ingredient is a single item, so this is a plain vanilla shaped recipe with no
 extra quantity enforcement needed.
 
-The Heart item's icon is composited from the real vanilla HUD heart sprites
-(the dark outline layer plus the red fill layer, extracted from Mojang's own
-game assets), scaled up from their native 9x9 to 36x36 for a crisper item icon.
+## No client mod required
+
+Players joining the server do **not** need Fabric Loader or Fabric API installed -
+only the server does. This mod deliberately never registers a real custom item: a
+truly custom item would need every connecting client to already understand that
+registry entry, which is exactly what forces a "this server requires Fabric Loader
+and Fabric API" disconnect. Instead, a Heart is a plain vanilla Nether Star carrying
+a `minecraft:custom_data` marker and a custom name - both are stock vanilla item
+components any client, modded or not, already understands. The tradeoff is visual:
+without the mod (or a resource pack) installed client-side, a Heart just looks like
+a Nether Star named "Heart" rather than the custom heart-shaped icon.
 
 ## Building
 
